@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalentOS — AI 驱动的职业发展平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .card-hover { transition: all 0.3s ease; }
+        .fade-in { animation: fadeIn 0.8s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Hero -->
+    <section class="gradient-bg min-h-screen flex items-center justify-center text-white">
+        <div class="max-w-4xl mx-auto px-6 text-center fade-in">
+            <div class="mb-6">
+                <span class="inline-block bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5 text-sm font-medium">
+                    🚀 正在内测中
+                </span>
+            </div>
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
+                TalentOS
+            </h1>
+            <p class="text-xl md:text-2xl text-white/90 mb-4 font-light">
+                AI 驱动的职业发展平台
+            </p>
+            <p class="text-lg text-white/70 mb-12 max-w-2xl mx-auto">
+                简历评估 · 岗位匹配 · 能力发掘<br>
+                不是泛泛而谈，是针对你的精准分析
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="experiments/a1-1/" class="inline-block bg-white text-purple-700 font-semibold px-8 py-4 rounded-xl text-lg hover:bg-gray-100 transition shadow-lg">
+                    📄 上传简历，获得分析
+                </a>
+                <a href="experiments/a2-2/" class="inline-block bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white font-semibold px-8 py-4 rounded-xl text-lg hover:bg-white/20 transition">
+                    📊 查看示例报告
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-20 px-6">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">三大核心能力</h2>
+            <p class="text-center text-gray-500 mb-16 max-w-xl mx-auto">AI 不只是工具，更是你的职业发展顾问</p>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 card-hover">
+                    <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
+                        <span class="text-2xl">🔍</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">AI 简历 X 光</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        上传简历 + 目标职位 JD，AI 在 60 秒内完成结构化分析：匹配度评分、逐项技能对比、具体改进建议。
+                    </p>
+                    <div class="mt-6 pt-4 border-t border-gray-100">
+                        <a href="experiments/a1-1/" class="text-purple-600 font-medium hover:text-purple-700">
+                            立即体验 →
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 card-hover">
+                    <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
+                        <span class="text-2xl">🎯</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">语义岗位匹配</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        不靠关键词，靠语义理解。AI 分析你的能力与岗位需求的深层匹配，并告诉你"为什么匹配"。
+                    </p>
+                    <div class="mt-6 pt-4 border-t border-gray-100">
+                        <a href="experiments/a2-2/" class="text-blue-600 font-medium hover:text-blue-700">
+                            查看示例 →
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 card-hover">
+                    <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-6">
+                        <span class="text-2xl">📈</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">技能差距分析</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        精准识别你与目标岗位之间的技能差距，提供优先级排序的学习路径和时间估算。
+                    </p>
+                    <div class="mt-6 pt-4 border-t border-gray-100">
+                        <span class="text-gray-400 font-medium">即将推出</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="py-20 px-6 bg-white">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-16">三步获得洞察</h2>
+            <div class="space-y-12">
+                <div class="flex items-start gap-6">
+                    <div class="flex-shrink-0 w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold text-lg">1</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">上传简历</h3>
+                        <p class="text-gray-600">支持 PDF、Word 格式。AI 自动解析你的工作经历、技能、教育背景。数据加密传输，永不共享。</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-6">
+                    <div class="flex-shrink-0 w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold text-lg">2</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">AI 分析</h3>
+                        <p class="text-gray-600">粘贴目标职位描述，AI 在 60 秒内完成语义匹配分析，生成包含评分、差距、建议的结构化报告。</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-6">
+                    <div class="flex-shrink-0 w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold text-lg">3</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">获得行动指南</h3>
+                        <p class="text-gray-600">不只是告诉你"哪里不行"，而是告诉你"怎么做"。具体的简历改进建议、面试准备要点、学习路径推荐。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-20 px-6 gradient-bg text-white text-center">
+        <h2 class="text-3xl font-bold mb-4">准备好了解真正的自己了吗？</h2>
+        <p class="text-white/80 mb-8 max-w-xl mx-auto">加入内测，获得你的第一份 AI 职业分析报告</p>
+        <a href="experiments/a1-1/" class="inline-block bg-white text-purple-700 font-semibold px-10 py-4 rounded-xl text-lg hover:bg-gray-100 transition shadow-lg">
+            开始分析 →
+        </a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-6 bg-gray-900 text-gray-400 text-center text-sm">
+        <p>© 2026 TalentOS. All rights reserved.</p>
+        <p class="mt-2">
+            <a href="https://github.com/xilingzhang181/TalentOS" class="hover:text-white transition">GitHub</a>
+            <span class="mx-2">·</span>
+            <span>AI-first career platform</span>
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TalentOS - 你的简历，AI 60秒读懂</title>
+  <meta name="description" content="上传简历，获得结构化的职业分析报告 — 匹配度评分、技能差距、改进建议">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a5f',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+    body { font-family: 'Noto Sans SC', 'Inter', system-ui, sans-serif; }
+
+    .upload-zone { transition: all 0.3s ease; }
+    .upload-zone:hover { border-color: #3b82f6; background: #eff6ff; }
+    .upload-zone.dragover { border-color: #2563eb; background: #dbeafe; transform: scale(1.01); }
+
+    .modal-overlay { opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal-content { transform: translateY(16px) scale(0.97); transition: transform 0.25s ease; }
+    .modal-overlay.active .modal-content { transform: translateY(0) scale(1); }
+
+    .card-hover { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(37, 99, 235, 0.12); }
+
+    .fade-in { opacity: 0; transform: translateY(20px); animation: fadeIn 0.6s ease forwards; }
+    .fade-in-delay-1 { animation-delay: 0.15s; }
+    .fade-in-delay-2 { animation-delay: 0.3s; }
+    .fade-in-delay-3 { animation-delay: 0.45s; }
+    @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+
+    .gradient-bg {
+      background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #3b82f6 100%);
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-800 antialiased">
+
+  <!-- Header -->
+  <header class="w-full bg-white/80 backdrop-blur-md border-b border-gray-100 fixed top-0 z-50">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <span class="text-lg font-bold text-gray-900">TalentOS</span>
+      </div>
+      <span class="text-xs font-medium text-brand-600 bg-brand-50 px-3 py-1 rounded-full border border-brand-100">内测中</span>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="pt-24 pb-16">
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-12 sm:pt-20">
+      <div class="fade-in">
+        <p class="text-sm font-semibold text-brand-600 tracking-wide uppercase mb-4">AI 驱动的职业分析</p>
+        <h1 class="text-3xl sm:text-5xl font-bold text-gray-900 leading-tight mb-6">
+          你的简历，<span class="text-brand-600">AI 60秒</span>读懂
+        </h1>
+      </div>
+      <div class="fade-in fade-in-delay-1">
+        <p class="text-base sm:text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed mb-12">
+          上传简历，获得结构化的职业分析报告 — 匹配度评分、技能差距、改进建议
+        </p>
+      </div>
+
+      <!-- Upload Area -->
+      <div class="fade-in fade-in-delay-2 max-w-xl mx-auto mb-16">
+        <div
+          id="uploadZone"
+          class="upload-zone border-2 border-dashed border-gray-300 rounded-2xl p-10 sm:p-14 cursor-pointer bg-gray-50/50"
+          data-track="upload-zone-click"
+          role="button"
+          tabindex="0"
+          aria-label="点击或拖拽上传简历"
+        >
+          <div class="flex flex-col items-center gap-4">
+            <div class="w-16 h-16 rounded-2xl bg-brand-50 flex items-center justify-center">
+              <svg class="w-8 h-8 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-base font-semibold text-gray-700">点击上传或拖拽简历到这里</p>
+              <p class="text-sm text-gray-400 mt-1">支持 PDF、Word 格式，最大 10MB</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Value Props -->
+      <div class="fade-in fade-in-delay-3 max-w-4xl mx-auto mb-20">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <!-- Card 1 -->
+          <div class="card-hover bg-white border border-gray-100 rounded-2xl p-7 text-left shadow-sm" data-track="card-match-score">
+            <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center mb-5">
+              <svg class="w-6 h-6 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">匹配度评分</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">
+              AI 深度解析您的简历与目标岗位的匹配程度，量化呈现核心竞争力。
+            </p>
+          </div>
+          <!-- Card 2 -->
+          <div class="card-hover bg-white border border-gray-100 rounded-2xl p-7 text-left shadow-sm" data-track="card-skill-gap">
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center mb-5">
+              <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">技能差距分析</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">
+              精准识别简历中缺失的关键技能，对比行业需求，明确提升方向。
+            </p>
+          </div>
+          <!-- Card 3 -->
+          <div class="card-hover bg-white border border-gray-100 rounded-2xl p-7 text-left shadow-sm" data-track="card-resume-improve">
+            <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center mb-5">
+              <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">简历改进建议</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">
+              逐条优化措辞与结构，用数据驱动的方式让您的简历脱颖而出。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trust Signal -->
+      <div class="max-w-xl mx-auto mb-8">
+        <div class="flex items-center justify-center gap-3 py-4 px-6 bg-gray-50 rounded-xl border border-gray-100">
+          <svg class="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+          <p class="text-sm text-gray-500" data-track="trust-signal">
+            您的简历加密传输，永不出售，随时删除
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-100 py-8">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-sm text-gray-400">&copy; 2026 TalentOS. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Email Capture Modal -->
+  <div id="emailModal" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" id="modalBackdrop"></div>
+    <!-- Modal -->
+    <div class="modal-content relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
+      <button id="modalClose" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors" aria-label="关闭">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+
+      <div id="modalStep1">
+        <div class="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center mx-auto mb-6">
+          <svg class="w-7 h-7 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <h2 id="modalTitle" class="text-xl font-bold text-gray-900 text-center mb-3">感谢您的关注！</h2>
+        <p class="text-sm text-gray-500 text-center leading-relaxed mb-6">
+          TalentOS 正在内测中。留下邮箱，我们将在 <strong class="text-gray-700">48小时内</strong> 发送您的免费分析报告。
+        </p>
+        <form id="emailForm" class="space-y-3">
+          <div>
+            <label for="emailInput" class="sr-only">邮箱地址</label>
+            <input
+              id="emailInput"
+              type="email"
+              required
+              placeholder="your@email.com"
+              class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent placeholder-gray-400 transition-shadow"
+              data-track="email-input-focus"
+            >
+          </div>
+          <button
+            type="submit"
+            class="w-full py-3 px-6 bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm rounded-xl transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+            data-track="email-submit-click"
+          >
+            免费获取分析报告
+          </button>
+        </form>
+        <p class="text-xs text-gray-400 text-center mt-4">我们尊重您的隐私，不会发送垃圾邮件。</p>
+      </div>
+
+      <div id="modalStep2" class="hidden text-center py-4">
+        <div class="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-5">
+          <svg class="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">预约成功！</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">我们将在 48 小时内将您的专属分析报告发送到您的邮箱。请留意收件箱。</p>
+        <button
+          id="modalDone"
+          class="mt-6 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium text-sm rounded-xl transition-colors"
+        >
+          关闭
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Upload Zone Interaction ---
+    const uploadZone = document.getElementById('uploadZone');
+    const modal = document.getElementById('emailModal');
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalClose = document.getElementById('modalClose');
+    const modalDone = document.getElementById('modalDone');
+    const emailForm = document.getElementById('emailForm');
+    const modalStep1 = document.getElementById('modalStep1');
+    const modalStep2 = document.getElementById('modalStep2');
+
+    function openModal() {
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      track('modal-open');
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+      // Reset to step 1 after a delay
+      setTimeout(() => {
+        modalStep1.classList.remove('hidden');
+        modalStep2.classList.add('hidden');
+        emailForm.reset();
+      }, 300);
+    }
+
+    uploadZone.addEventListener('click', openModal);
+    uploadZone.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(); }
+    });
+
+    // Drag & Drop visual feedback
+    uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+    uploadZone.addEventListener('dragleave', () => { uploadZone.classList.remove('dragover'); });
+    uploadZone.addEventListener('drop', (e) => { e.preventDefault(); uploadZone.classList.remove('dragover'); openModal(); });
+
+    // Modal close
+    modalBackdrop.addEventListener('click', closeModal);
+    modalClose.addEventListener('click', closeModal);
+    modalDone.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
+
+    // Email form submission
+    emailForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('emailInput').value;
+      if (!email) return;
+
+      // Track conversion
+      track('email-submitted', { email_domain: email.split('@')[1] });
+
+      // Show success
+      modalStep1.classList.add('hidden');
+      modalStep2.classList.remove('hidden');
+    });
+
+    // --- Analytics Tracking Placeholder ---
+    function track(eventName, data = {}) {
+      console.log('[TalentOS Analytics]', eventName, data);
+      // TODO: Integrate with analytics provider
+      // window.dataLayer = window.dataLayer || [];
+      // window.dataLayer.push({ event: eventName, ...data });
+    }
+
+    // Track page view
+    track('page-view', { experiment: 'a1-1', page: 'resume-upload-landing' });
+
+    // Track scroll depth
+    let maxScroll = 0;
+    window.addEventListener('scroll', () => {
+      const scrollPercent = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+      if (scrollPercent > maxScroll && scrollPercent % 25 === 0) {
+        maxScroll = scrollPercent;
+        track('scroll-depth', { percent: scrollPercent });
+      }
+    }, { passive: true });
+  </script>
+
+</body>
+</html>
