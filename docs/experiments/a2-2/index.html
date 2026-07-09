@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TalentOS - 不是泛泛而谈，是针对你的简历的精准分析</title>
+  <meta name="description" content="上传简历，获得精准的匹配度评分、技能差距分析和改进建议 — 不是模板化建议，而是为你量身定制的分析报告。">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a5f',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+    body { font-family: 'Noto Sans SC', 'Inter', system-ui, sans-serif; }
+
+    .modal-overlay { opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal-content { transform: translateY(16px) scale(0.97); transition: transform 0.25s ease; }
+    .modal-overlay.active .modal-content { transform: translateY(0) scale(1); }
+
+    .fade-in { opacity: 0; transform: translateY(20px); animation: fadeIn 0.6s ease forwards; }
+    .fade-in-delay-1 { animation-delay: 0.15s; }
+    .fade-in-delay-2 { animation-delay: 0.3s; }
+    .fade-in-delay-3 { animation-delay: 0.45s; }
+    @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+
+    /* Gauge animation */
+    .gauge-fill { stroke-dasharray: 251.2; stroke-dashoffset: 251.2; animation: gaugeAnim 1.2s ease-out 0.5s forwards; }
+    @keyframes gaugeAnim { to { stroke-dashoffset: 55.3; } }
+
+    .gradient-bg {
+      background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #3b82f6 100%);
+    }
+
+    /* Blur mask on the report mockup */
+    .report-blur-mask {
+      -webkit-mask-image: linear-gradient(to bottom, black 0%, black 60%, transparent 100%);
+      mask-image: linear-gradient(to bottom, black 0%, black 60%, transparent 100%);
+    }
+
+    .pulse-count { animation: pulseCount 2s ease-in-out infinite; }
+    @keyframes pulseCount { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+  </style>
+</head>
+<body class="bg-white text-gray-800 antialiased">
+
+  <!-- Header -->
+  <header class="w-full bg-white/80 backdrop-blur-md border-b border-gray-100 fixed top-0 z-50">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <span class="text-lg font-bold text-gray-900">TalentOS</span>
+      </div>
+      <span class="text-xs font-semibold text-brand-600 bg-brand-50 px-3 py-1 rounded-full border border-brand-100">内测中</span>
+    </div>
+  </header>
+
+  <main class="pt-24 pb-20">
+
+    <!-- Hero -->
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-10 sm:pt-16">
+      <div class="fade-in">
+        <h1 class="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-5">
+          不是泛泛而谈。<br class="hidden sm:inline">
+          <span class="text-brand-600">针对你的简历</span>的精准分析。
+        </h1>
+      </div>
+      <div class="fade-in fade-in-delay-1">
+        <p class="text-base sm:text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed mb-10">
+          上传简历即可获得量身定制的职业分析报告，涵盖匹配评分、技能缺口和简历优化建议。
+        </p>
+      </div>
+    </section>
+
+    <!-- Report Mockup -->
+    <section class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 fade-in fade-in-delay-2">
+      <div class="relative">
+        <!-- Report Card -->
+        <div class="report-blur-mask bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden">
+
+          <!-- Report Header -->
+          <div class="px-6 sm:px-8 pt-7 pb-5 border-b border-gray-100">
+            <div class="flex items-center justify-between mb-1">
+              <div>
+                <p class="text-xs text-gray-400 font-medium uppercase tracking-wide">TalentOS 职业分析报告</p>
+                <h2 class="text-xl font-bold text-gray-900 mt-1">高级数据分析师</h2>
+              </div>
+              <div class="hidden sm:flex items-center gap-2 bg-brand-50 px-3 py-1.5 rounded-lg">
+                <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                </svg>
+                <span class="text-xs font-semibold text-brand-600">AI 生成</span>
+              </div>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">分析日期：2026年7月10日</p>
+          </div>
+
+          <div class="px-6 sm:px-8 py-7 space-y-8">
+
+            <!-- Match Score Gauge -->
+            <div data-track="mockup-match-score">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">整体匹配度评分</p>
+              <div class="flex items-center gap-8">
+                <div class="relative flex-shrink-0">
+                  <svg width="100" height="100" viewBox="0 0 100 100" class="-rotate-90">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" stroke-width="8"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#2563eb" stroke-width="8" stroke-linecap="round" class="gauge-fill"/>
+                  </svg>
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="text-2xl font-bold text-gray-900">78</span>
+                  </div>
+                </div>
+                <div>
+                  <p class="text-lg font-bold text-brand-600">78 / 100</p>
+                  <p class="text-sm text-gray-500 mt-0.5">高于 65% 的同类候选人</p>
+                  <div class="flex items-center gap-1.5 mt-2">
+                    <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                    <span class="text-xs text-emerald-600 font-medium">整体较强，有提升空间</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Skills Gap Table -->
+            <div data-track="mockup-skills-gap">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">技能差距分析</p>
+              <div class="border border-gray-100 rounded-xl overflow-hidden">
+                <table class="w-full text-sm">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="text-left px-4 py-2.5 text-xs font-semibold text-gray-500">技能项</th>
+                      <th class="text-left px-4 py-2.5 text-xs font-semibold text-gray-500">简历中</th>
+                      <th class="text-left px-4 py-2.5 text-xs font-semibold text-gray-500">岗位要求</th>
+                      <th class="text-center px-4 py-2.5 text-xs font-semibold text-gray-500">状态</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-50">
+                    <tr>
+                      <td class="px-4 py-3 font-medium text-gray-800">Python</td>
+                      <td class="px-4 py-3 text-gray-500">3 年经验</td>
+                      <td class="px-4 py-3 text-gray-500">2 年+</td>
+                      <td class="px-4 py-3 text-center"><span class="inline-flex items-center gap-1 text-emerald-600 font-semibold text-xs bg-emerald-50 px-2 py-0.5 rounded-full">&#10003; 达标</span></td>
+                    </tr>
+                    <tr>
+                      <td class="px-4 py-3 font-medium text-gray-800">AWS</td>
+                      <td class="px-4 py-3 text-gray-400">未提及</td>
+                      <td class="px-4 py-3 text-gray-500">2 年+</td>
+                      <td class="px-4 py-3 text-center"><span class="inline-flex items-center gap-1 text-red-500 font-semibold text-xs bg-red-50 px-2 py-0.5 rounded-full">&#10007; 缺失</span></td>
+                    </tr>
+                    <tr>
+                      <td class="px-4 py-3 font-medium text-gray-800">数据可视化</td>
+                      <td class="px-4 py-3 text-gray-400">未提及</td>
+                      <td class="px-4 py-3 text-gray-500">熟练使用</td>
+                      <td class="px-4 py-3 text-center"><span class="inline-flex items-center gap-1 text-red-500 font-semibold text-xs bg-red-50 px-2 py-0.5 rounded-full">&#10007; 缺失</span></td>
+                    </tr>
+                    <tr>
+                      <td class="px-4 py-3 font-medium text-gray-800">SQL</td>
+                      <td class="px-4 py-3 text-gray-500">熟练</td>
+                      <td class="px-4 py-3 text-gray-500">精通</td>
+                      <td class="px-4 py-3 text-center"><span class="inline-flex items-center gap-1 text-amber-500 font-semibold text-xs bg-amber-50 px-2 py-0.5 rounded-full">~ 需加强</span></td>
+                    </tr>
+                    <tr>
+                      <td class="px-4 py-3 font-medium text-gray-800">机器学习</td>
+                      <td class="px-4 py-3 text-gray-500">项目经验</td>
+                      <td class="px-4 py-3 text-gray-500">有经验即可</td>
+                      <td class="px-4 py-3 text-center"><span class="inline-flex items-center gap-1 text-emerald-600 font-semibold text-xs bg-emerald-50 px-2 py-0.5 rounded-full">&#10003; 达标</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Before / After Resume Bullet -->
+            <div data-track="mockup-before-after">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">简历优化建议（示例）</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Before -->
+                <div class="border border-red-100 bg-red-50/50 rounded-xl p-5">
+                  <div class="flex items-center gap-2 mb-3">
+                    <span class="text-xs font-bold text-red-400 uppercase tracking-wide">修改前</span>
+                  </div>
+                  <p class="text-sm text-gray-600 leading-relaxed line-through decoration-red-300/60">
+                    "负责数据分析工作，使用 Python 处理数据，为团队提供报告支持。"
+                  </p>
+                </div>
+                <!-- After -->
+                <div class="border border-emerald-100 bg-emerald-50/50 rounded-xl p-5">
+                  <div class="flex items-center gap-2 mb-3">
+                    <span class="text-xs font-bold text-emerald-500 uppercase tracking-wide">修改后</span>
+                  </div>
+                  <p class="text-sm text-gray-700 leading-relaxed font-medium">
+                    "运用 Python (Pandas, NumPy) 搭建自动化数据管道，将月度报告产出效率提升 40%，覆盖 5 个业务线共 200+ 指标。"
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Why It Matches -->
+            <div data-track="mockup-why-match">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">为什么匹配</p>
+              <div class="bg-brand-50/60 border border-brand-100 rounded-xl p-6">
+                <div class="flex items-start gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-brand-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                      您的 <strong>Python 数据处理经验</strong>与岗位核心需求高度匹配。3 年实战经验超出岗位要求，且 <strong>机器学习项目</strong>为加分项。建议重点补充 AWS 和数据可视化技能以达到完美匹配。
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hidden content that fades out - creating curiosity -->
+            <div class="opacity-30 pt-2 space-y-4">
+              <div class="h-4 bg-gray-100 rounded-full w-3/4"></div>
+              <div class="h-4 bg-gray-100 rounded-full w-1/2"></div>
+              <div class="h-20 bg-gray-100 rounded-xl"></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Curiosity gradient overlay -->
+        <div class="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none rounded-b-2xl"></div>
+
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center fade-in fade-in-delay-3">
+      <button
+        id="ctaButton"
+        class="inline-flex items-center gap-2 px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white font-bold text-base sm:text-lg rounded-2xl shadow-lg shadow-brand-600/25 hover:shadow-brand-600/40 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+        data-track="cta-click"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        获取我的免费报告
+      </button>
+
+      <!-- Social Proof -->
+      <div class="mt-5 flex items-center justify-center gap-2">
+        <div class="flex -space-x-2">
+          <div class="w-7 h-7 rounded-full bg-brand-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-brand-600">L</div>
+          <div class="w-7 h-7 rounded-full bg-emerald-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-emerald-600">W</div>
+          <div class="w-7 h-7 rounded-full bg-amber-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-amber-600">Z</div>
+          <div class="w-7 h-7 rounded-full bg-purple-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-purple-600">+</div>
+        </div>
+        <p class="text-sm text-gray-500" data-track="social-proof">
+          已有 <strong class="text-gray-700">2,347</strong> 人加入等待名单
+        </p>
+      </div>
+    </section>
+
+    <!-- Trust Signal -->
+    <section class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+      <div class="flex items-center justify-center gap-3 py-4 px-6 bg-gray-50 rounded-xl border border-gray-100">
+        <svg class="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+        <p class="text-sm text-gray-500" data-track="trust-signal">
+          您的简历加密传输，永不出售，随时删除
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-100 py-8">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-sm text-gray-400">&copy; 2026 TalentOS. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Email Capture Modal -->
+  <div id="emailModal" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modalTitle2">
+    <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" id="modalBackdrop"></div>
+    <div class="modal-content relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
+      <button id="modalClose" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors" aria-label="关闭">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+
+      <div id="modalStep1">
+        <div class="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center mx-auto mb-6">
+          <svg class="w-7 h-7 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+        </div>
+        <h2 id="modalTitle2" class="text-xl font-bold text-gray-900 text-center mb-3">获取你的专属分析报告</h2>
+        <p class="text-sm text-gray-500 text-center leading-relaxed mb-6">
+          上传简历后，AI 将在 <strong class="text-gray-700">60 秒内</strong> 为你生成一份精准的职业分析报告。
+        </p>
+        <form id="emailForm" class="space-y-3">
+          <div>
+            <label for="emailInput" class="sr-only">邮箱地址</label>
+            <input
+              id="emailInput"
+              type="email"
+              required
+              placeholder="your@email.com"
+              class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent placeholder-gray-400 transition-shadow"
+              data-track="email-input-focus"
+            >
+          </div>
+          <button
+            type="submit"
+            class="w-full py-3 px-6 bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm rounded-xl transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+            data-track="email-submit-click"
+          >
+            免费获取分析报告
+          </button>
+        </form>
+        <p class="text-xs text-gray-400 text-center mt-4">我们尊重您的隐私，不会发送垃圾邮件。</p>
+      </div>
+
+      <div id="modalStep2" class="hidden text-center py-4">
+        <div class="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-5">
+          <svg class="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">预约成功！</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">我们将在 48 小时内将您的专属分析报告发送到您的邮箱。请留意收件箱。</p>
+        <button
+          id="modalDone"
+          class="mt-6 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium text-sm rounded-xl transition-colors"
+        >
+          关闭
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Modal Logic ---
+    const ctaButton = document.getElementById('ctaButton');
+    const modal = document.getElementById('emailModal');
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalClose = document.getElementById('modalClose');
+    const modalDone = document.getElementById('modalDone');
+    const emailForm = document.getElementById('emailForm');
+    const modalStep1 = document.getElementById('modalStep1');
+    const modalStep2 = document.getElementById('modalStep2');
+
+    function openModal() {
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      track('modal-open');
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        modalStep1.classList.remove('hidden');
+        modalStep2.classList.add('hidden');
+        emailForm.reset();
+      }, 300);
+    }
+
+    ctaButton.addEventListener('click', openModal);
+    modalBackdrop.addEventListener('click', closeModal);
+    modalClose.addEventListener('click', closeModal);
+    modalDone.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
+
+    emailForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('emailInput').value;
+      if (!email) return;
+
+      track('email-submitted', { email_domain: email.split('@')[1], experiment: 'a2-2' });
+
+      modalStep1.classList.add('hidden');
+      modalStep2.classList.remove('hidden');
+    });
+
+    // --- Analytics Tracking Placeholder ---
+    function track(eventName, data = {}) {
+      console.log('[TalentOS Analytics]', eventName, data);
+      // TODO: Integrate with analytics provider
+      // window.dataLayer = window.dataLayer || [];
+      // window.dataLayer.push({ event: eventName, ...data });
+    }
+
+    track('page-view', { experiment: 'a2-2', page: 'career-report-preview' });
+
+    // Track scroll depth
+    let maxScroll = 0;
+    window.addEventListener('scroll', () => {
+      const scrollPercent = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+      if (scrollPercent > maxScroll && scrollPercent % 25 === 0) {
+        maxScroll = scrollPercent;
+        track('scroll-depth', { percent: scrollPercent });
+      }
+    }, { passive: true });
+
+    // Track report mockup view with Intersection Observer
+    const mockupObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          track('mockup-visible', { element: entry.target.dataset.track });
+          mockupObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('[data-track^="mockup-"]').forEach((el) => {
+      mockupObserver.observe(el);
+    });
+  </script>
+
+</body>
+</html>
