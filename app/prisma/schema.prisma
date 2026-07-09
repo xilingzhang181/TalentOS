@@ -1,0 +1,258 @@
+// TalentOS - Prisma Schema
+// PostgreSQL with pgvector for semantic search
+
+generator client {
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [vector]
+}
+
+// ─── Enums ──────────────────────────────────────────────────────────────────
+
+enum CareerStage {
+  student
+  early_career
+  mid_career
+  senior
+  executive
+  career_change
+}
+
+enum ResumeStatus {
+  uploaded
+  processing
+  processed
+  failed
+}
+
+enum RemotePolicy {
+  remote
+  hybrid
+  onsite
+  unknown
+}
+
+enum JobSource {
+  manual
+  linkedin
+  indeed
+  glassdoor
+  api
+  user_paste
+}
+
+enum SkillCategory {
+  technical
+  language
+  tool
+  framework
+  methodology
+  soft_skill
+  certification
+  domain_knowledge
+}
+
+enum SkillSource {
+  resume_extracted
+  user_added
+  jd_derived
+}
+
+enum GapType {
+  missing
+  partial
+  outdated
+  emerging
+}
+
+enum MatchStatus {
+  new
+  viewed
+  applied
+  dismissed
+}
+
+// ─── Models ─────────────────────────────────────────────────────────────────
+
+model User {
+  id           String      @id @default(uuid()) @db.Uuid
+  email        String      @unique
+  name         String
+  passwordHash String      @map("password_hash")
+  careerStage  CareerStage @map("career_stage")
+  targetRole   String?     @map("target_role")
+  linkedinUrl  String?     @map("linkedin_url")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  resumes Resume[]
+  skills  UserSkill[]
+  matches Match[]
+
+  @@map("users")
+}
+
+model Resume {
+  id              String                       @id @default(uuid()) @db.Uuid
+  userId          String                       @map("user_id") @db.Uuid
+  fileUrl         String                       @map("file_url")
+  fileName        String                       @map("file_name")
+  fileSizeBytes   Int                          @map("file_size_bytes")
+  mimeType        String                       @map("mime_type")
+  rawText         String?                      @map("raw_text")
+  parsedJson      Json?                        @map("parsed_json")
+  embeddingVector Unsupported("vector(1536)")? @map("embedding_vector")
+  // pgvector: stores OpenAI ada-002 embeddings for semantic resume search
+  status          ResumeStatus                 @default(uploaded)
+  errorMessage    String?                      @map("error_message")
+  createdAt       DateTime                     @default(now()) @map("created_at")
+  updatedAt       DateTime                     @updatedAt @map("updated_at")
+
+  // Relations
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analyses ResumeAnalysis[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("resumes")
+}
+
+model JobDescription {
+  id              String                       @id @default(uuid()) @db.Uuid
+  title           String
+  company         String
+  location        String?
+  remotePolicy    RemotePolicy                 @default(unknown) @map("remote_policy")
+  salaryMin       Int?                         @map("salary_min")
+  salaryMax       Int?                         @map("salary_max")
+  rawText         String                       @map("raw_text")
+  parsedJson      Json?                        @map("parsed_json")
+  embeddingVector Unsupported("vector(1536)")? @map("embedding_vector")
+  // pgvector: stores OpenAI ada-002 embeddings for semantic job search
+  source          JobSource                    @default(manual)
+  sourceUrl       String?                      @map("source_url")
+  createdAt       DateTime                     @default(now()) @map("created_at")
+  updatedAt       DateTime                     @updatedAt @map("updated_at")
+
+  // Relations
+  analyses ResumeAnalysis[]
+  matches  Match[]
+
+  @@index([company])
+  @@index([remotePolicy])
+  @@index([source])
+  @@map("job_descriptions")
+}
+
+model Skill {
+  id        String        @id @default(uuid()) @db.Uuid
+  name      String        @unique
+  category  SkillCategory
+  aliases   String[]      @default([])
+  createdAt DateTime      @default(now()) @map("created_at")
+
+  // Relations
+  users    UserSkill[]
+  analyses SkillGap[]
+
+  @@index([category])
+  @@map("skills")
+}
+
+model UserSkill {
+  id               String      @id @default(uuid()) @db.Uuid
+  userId           String      @map("user_id") @db.Uuid
+  skillId          String      @map("skill_id") @db.Uuid
+  proficiencyLevel Int         @map("proficiency_level") // 1-5
+  yearsExperience  Float?      @map("years_experience")
+  evidence         String?
+  source           SkillSource @default(user_added)
+  createdAt        DateTime    @default(now()) @map("created_at")
+  updatedAt        DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skillId])
+  @@index([userId])
+  @@index([skillId])
+  @@index([proficiencyLevel])
+  @@map("user_skills")
+}
+
+model ResumeAnalysis {
+  id               String   @id @default(uuid()) @db.Uuid
+  resumeId         String   @map("resume_id") @db.Uuid
+  jobDescriptionId String?  @map("job_description_id") @db.Uuid
+  matchScore       Float?   @map("match_score")
+  skillsMatch      Json?    @map("skills_match")
+  feedback         String?
+  feedbackJson     Json?    @map("feedback_json")
+  processingTimeMs Int?     @map("processing_time_ms")
+  modelUsed        String?  @map("model_used")
+  costCents        Int?     @map("cost_cents")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  // Relations
+  resume         Resume          @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  jobDescription JobDescription? @relation(fields: [jobDescriptionId], references: [id], onDelete: SetNull)
+  skillGaps      SkillGap[]
+
+  @@index([resumeId])
+  @@index([jobDescriptionId])
+  @@index([matchScore])
+  @@map("resume_analyses")
+}
+
+model SkillGap {
+  id             String   @id @default(uuid()) @db.Uuid
+  analysisId     String   @map("analysis_id") @db.Uuid
+  skillId        String   @map("skill_id") @db.Uuid
+  gapType        GapType  @map("gap_type")
+  requiredLevel  Int?     @map("required_level")
+  currentLevel   Int?     @map("current_level")
+  recommendation String?
+  priority       Int // 1-5
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  // Relations
+  analysis ResumeAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  skill    Skill          @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@index([analysisId])
+  @@index([skillId])
+  @@index([priority])
+  @@index([gapType])
+  @@map("skill_gaps")
+}
+
+model Match {
+  id              String      @id @default(uuid()) @db.Uuid
+  userId          String      @map("user_id") @db.Uuid
+  jobId           String      @map("job_id") @db.Uuid
+  score           Float?
+  semanticScore   Float?      @map("semantic_score")
+  skillsScore     Float?      @map("skills_score")
+  explanation     String?
+  explanationJson Json?       @map("explanation_json")
+  status          MatchStatus @default(new)
+  createdAt       DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  user User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job  JobDescription @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+  @@index([userId])
+  @@index([jobId])
+  @@index([score])
+  @@index([status])
+  @@map("matches")
+}

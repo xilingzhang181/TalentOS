@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg15
+    container_name: talentos-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-talentos}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-talentos_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-talentos}
+    volumes:
+      - talentos-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-talentos} -d ${POSTGRES_DB:-talentos}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  talentos-pgdata:
